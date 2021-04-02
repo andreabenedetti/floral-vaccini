@@ -1,11 +1,16 @@
-d3.csv("data.csv").then(data => {
-  var r = 1.2
+d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mlaesn5tgSW6Sczw4KSUNg3MOMELBBXnQDn2J1QB12d0btw5NYMl7iMErh/pub?gid=942563243&single=true&output=csv").then(data => {
+  console.log(data)
+
+  var r = 1.5
   var w = 800, h = 800
   const radius = w/2;
   const hyp2 = Math.pow(radius, 2)
 
-  var colour = d3.scaleOrdinal(d3.schemeSet3)
-  	.domain(d3.map(data, d => d.category));
+  var colour = d3.scaleOrdinal()
+  	.domain(d3.map(data, d => d.category))
+    .range(["#9C962F", "#A49BD8", "#7FAEAE"]);
+
+    // "#A49BD8", "#70B1A0", "#7FAEAE", "#FFF", "#000"]);
 
   var ringColor = d3.scaleOrdinal(d3.schemeSet3)
   	.domain(d3.map(data, d => d.ring));
@@ -14,40 +19,51 @@ d3.csv("data.csv").then(data => {
     .html('')
     .append('svg')
     .attr("width", w)
-  	.attr("height", h)
-    .style("background", "GhostWhite")
+  	.attr("height", h);
+
+  let dayScale = d3.scaleOrdinal()
+  .domain(d3.map(data, d => d.data))
+
+  let total = d3.rollup(data, v => d3.sum(v, d => d.value));
+  let days = dayScale.domain().length;
+  let target = 500000 * days;
+
+  let background = d3.scaleSqrt()
+    .domain([0, target])
+    .range(["#49454A", "#EAECD5"]);
+
+  console.log(total, target);
+
+  svg.style("background", () => background(0));
 
   //square path starts at mid point on the left side
   // var square = 'M 50,400 L50,50 L750,50 L750,750 50,750 z'
 
-  let square = "M400,540.3c-77.5,0-140.3-62.8-140.3-140.3S322.5,259.7,400,259.7S540.3,322.5,540.3,400S477.5,540.3,400,540.3z";
+  let innerSvg = "M266.17,533.83c-73.91-73.91-73.91-193.74,0-267.65s193.74-73.91,267.65,0s73.91,193.74,0,267.65S340.08,607.74,266.17,533.83z";
 
-  let anelloPath = "M400,648c-137,0-248-111-248-248s111-248,248-248s248,111,248,248S537,648,400,648z";
+  let outerSvg = "M183,617C63.15,497.15,63.15,302.85,183,183s314.15-119.85,434,0s119.85,314.15,0,434S302.85,736.85,183,617z";
 
-  var shape = 'square'
+  var innerPath = svg.append('path')
+    .attr("d", innerSvg)
 
-  var squareToCircle = flubber.toCircle(square, 400, 400, 150)
-  var circleToSquare = flubber.fromCircle(400, 400, 150, square)
+  var outerPath = svg.append('path')
+    .attr("d", outerSvg)
 
-  var path = svg.append('path')
-    .attr("d", square)
-
-  var anello = svg.append('path')
-    .attr("d", anelloPath)
-
-  var innerRing = path.node();
-  let outerRing = anello.node();
+  var innerRing = innerPath.node();
+  let outerRing = outerPath.node();
 
   var innerLength = d3.scalePoint()
   	.domain(d3.map(data, d => d.age))
     .range([0, innerRing.getTotalLength()])
+    .padding(0.5)
 
   var outerLength = d3.scalePoint()
   	.domain(d3.map(data, d => d.age))
     .range([0, outerRing.getTotalLength()])
+    .padding(0.5)
 
   var scaleX = function(d){
-    if(d.ring == "inner") {
+    if(d.ring == "prima_dose") {
       return innerRing.getPointAtLength(innerLength(d.age)).x
     } else {
       return outerRing.getPointAtLength(outerLength(d.age)).x
@@ -55,7 +71,7 @@ d3.csv("data.csv").then(data => {
   }
 
   var scaleY = function(d){
-    if(d.ring == "inner") {
+    if(d.ring == "prima_dose") {
       return innerRing.getPointAtLength(innerLength(d.age)).y
     } else {
       return outerRing.getPointAtLength(outerLength(d.age)).y
@@ -65,12 +81,12 @@ d3.csv("data.csv").then(data => {
   let nodes = [];
 
   data.forEach(d => {
-    for (let i = 0; i < d.value; i+=150) {
+    for (let i = 0; i <= d.value; i+=30) {
       nodes.push({
-        ring: d.ring,
+        ring: d.dose,
         cluster: d.age,
         age: d.age,
-        category: d.category
+        category: d.fornitore
       })
     }
   });
@@ -102,7 +118,8 @@ d3.csv("data.csv").then(data => {
     .style('stroke', "OrangeRed")
     .style('stroke-width', 1)
     .style('fill-opacity', 1)
-    .attr('stroke-linejoin', 'round');
+    .attr('stroke-linejoin', 'round')
+    .attr("id", d => d);
 
   var bees = svg.append("g").selectAll('.bee')
       .data(nodes)
@@ -110,9 +127,11 @@ d3.csv("data.csv").then(data => {
       .append('circle')
   		.attr("class", "bee")
       .attr("r", r)
-  		.style("fill", d => ringColor(d.ring))
+  		.style("fill", d => colour(d.category))
+      .attr("id", d => d.age)
+      .on("mouseover", (event, d) => console.log(d));
 
-  updateSwarm(550);
+  updateSwarm(650);
 
   function changeShape() {
 
@@ -141,7 +160,7 @@ d3.csv("data.csv").then(data => {
       outerLength.range([0, outerRing.getTotalLength()])
 
       let simulation = d3.forceSimulation(nodes)
-        .force('collide', d3.forceCollide(r+.5))
+        .force('collide', d3.forceCollide(r+0.5))
         .force('x', d3.forceX(d => scaleX(d)))
         .force('y', d3.forceY(d => scaleY(d)))
         // .alphaDecay(0)
