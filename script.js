@@ -1,19 +1,23 @@
 d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mlaesn5tgSW6Sczw4KSUNg3MOMELBBXnQDn2J1QB12d0btw5NYMl7iMErh/pub?gid=942563243&single=true&output=csv").then(data => {
   console.log(data)
 
-  var r = 1.5
-  var w = 800, h = 800
+  var r = 2.5
+  var w = 1080, h = 1080
   const radius = w/2;
   const hyp2 = Math.pow(radius, 2)
 
   var colour = d3.scaleOrdinal()
   	.domain(d3.map(data, d => d.category))
-    .range(["#9C962F", "#A49BD8", "#7FAEAE"]);
+    .range(["#B2AC2E", "#A49BD8", "#73BABA"]);
 
     // "#A49BD8", "#70B1A0", "#7FAEAE", "#FFF", "#000"]);
 
   var ringColor = d3.scaleOrdinal(d3.schemeSet3)
   	.domain(d3.map(data, d => d.ring));
+
+  let stroke = d3.scaleOrdinal()
+  .domain(d3.map(data, d => d.ring))
+  .domain(["#000", "#FFF"]);
 
   var svg = d3.select('#graph')
     .html('')
@@ -30,7 +34,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 
   let background = d3.scaleSqrt()
     .domain([0, target])
-    .range(["#49454A", "#EAECD5"]);
+    .range(["#394F49", "#EAECD5"]);
 
   console.log(total, target);
 
@@ -39,9 +43,9 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   //square path starts at mid point on the left side
   // var square = 'M 50,400 L50,50 L750,50 L750,750 50,750 z'
 
-  let innerSvg = "M266.17,533.83c-73.91-73.91-73.91-193.74,0-267.65s193.74-73.91,267.65,0s73.91,193.74,0,267.65S340.08,607.74,266.17,533.83z";
+  let innerSvg = "M540,329.15c116.45,0,210.85,94.4,210.85,210.85S656.45,750.85,540,750.85S329.15,656.45,329.15,540S423.55,329.15,540,329.15z";
 
-  let outerSvg = "M183,617C63.15,497.15,63.15,302.85,183,183s314.15-119.85,434,0s119.85,314.15,0,434S302.85,736.85,183,617z";
+  let outerSvg = "M540,121c231.41,0,419,187.59,419,419S771.41,959,540,959S121,771.41,121,540S308.59,121,540,121z";
 
   var innerPath = svg.append('path')
     .attr("d", innerSvg)
@@ -63,7 +67,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
     .padding(0.5)
 
   var scaleX = function(d){
-    if(d.ring == "prima_dose") {
+    if(d.ring == "SUM of prima_dose") {
       return innerRing.getPointAtLength(innerLength(d.age)).x
     } else {
       return outerRing.getPointAtLength(outerLength(d.age)).x
@@ -71,7 +75,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   }
 
   var scaleY = function(d){
-    if(d.ring == "prima_dose") {
+    if(d.ring == "SUM of prima_dose") {
       return innerRing.getPointAtLength(innerLength(d.age)).y
     } else {
       return outerRing.getPointAtLength(outerLength(d.age)).y
@@ -109,18 +113,6 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 
   console.log(nodeGroups);
 
-  const hulls = svg
-    .append("g")
-    .selectAll('path')
-    .data(groups)
-    .enter()
-    .append('path')
-    .style('stroke', "OrangeRed")
-    .style('stroke-width', 1)
-    .style('fill-opacity', 1)
-    .attr('stroke-linejoin', 'round')
-    .attr("id", d => d);
-
   var bees = svg.append("g").selectAll('.bee')
       .data(nodes)
       .enter()
@@ -128,8 +120,20 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   		.attr("class", "bee")
       .attr("r", r)
   		.style("fill", d => colour(d.category))
+      .style("stroke", d => stroke(d.ring))
       .attr("id", d => d.age)
       .on("mouseover", (event, d) => console.log(d));
+
+  const hulls = svg
+    .append("g")
+    .selectAll('path')
+    .data(groups)
+    .enter()
+    .append('path')
+    .style('stroke', "OrangeRed")
+    .style('stroke-width', 5)
+    .attr('stroke-linejoin', 'round')
+    .attr("id", d => d);
 
   updateSwarm(650);
 
