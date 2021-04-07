@@ -22,7 +22,8 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 
   var colour = d3.scaleOrdinal()
   	.domain(d3.map(nodes, d => d.category))
-    .range(["#7cb6f3", "#c17333", "#93A64E"]);
+    // .range(["#7cb6f3", "#c17333", "#93A64E"]);
+    .range(["#8886FF", "#FF3864", "#57A48D"]);
 
   vaccineBrands = colour.domain();
 
@@ -44,9 +45,10 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   let total = d3.rollup(data, v => d3.sum(v, d => d.value));
   let target = 500000;
 
-  let background = d3.scaleQuantile()
-    .domain([0, target])
-    .range(["#736F72", "#908C8C", "#ACA9A6", "#C9C5BF", "#E5E2D9"]);
+  let background = d3.scaleLinear()
+    .domain([100000, target])
+    // .range(["#736F72", "#908C8C", "#ACA9A6", "#C9C5BF", "#E5E2D9"]);
+    .range(["#FFCEA1", "#EAECD5"]);
 
   console.log(total, target);
 
@@ -137,16 +139,16 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   		.style("fill", d => colour(d.category))
       .attr("id", d => d.age);
 
-  const hulls = svg
-    .append("g")
-    .selectAll('path')
-    .data(groups)
-    .enter()
-    .append('path')
-    .style('stroke', "OrangeRed")
-    .style('stroke-width', 4)
-    .attr('stroke-linejoin', 'round')
-    .attr("id", d => d);
+  // const hulls = svg
+  //   .append("g")
+  //   .selectAll('path')
+  //   .data(groups)
+  //   .enter()
+  //   .append('path')
+  //   .style('stroke', "#000")
+  //   .style('stroke-width', 2)
+  //   .attr('stroke-linejoin', 'round')
+  //   .attr("id", d => d);
 
     svg.append("g")
     .append("text")
@@ -196,21 +198,21 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
         .attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
 
-      hulls.attr('d', g => {
-        let hullPoints = nodeGroups[g].map(n => {
-          return [n.x, n.y];
-        });
-
-        const hullData = d3.polygonHull(hullPoints);
-
-        if (hullData === null) {
-          return;
-        }
-
-        hullData.push(hullData[0]);
-
-        return d3.line()(hullData);
-      });
+      // hulls.attr('d', g => {
+      //   let hullPoints = nodeGroups[g].map(n => {
+      //     return [n.x, n.y];
+      //   });
+      //
+      //   const hullData = d3.polygonHull(hullPoints);
+      //
+      //   if (hullData === null) {
+      //     return;
+      //   }
+      //
+      //   hullData.push(hullData[0]);
+      //
+      //   return d3.line()(hullData);
+      // });
 
   }
 
