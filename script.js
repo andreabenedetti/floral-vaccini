@@ -1,23 +1,36 @@
 d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mlaesn5tgSW6Sczw4KSUNg3MOMELBBXnQDn2J1QB12d0btw5NYMl7iMErh/pub?gid=942563243&single=true&output=csv").then(data => {
-  console.log(data)
 
   var r = 2.5
   var w = 1080, h = 1080
   const radius = w/2;
-  const hyp2 = Math.pow(radius, 2)
+  const hyp2 = Math.pow(radius, 2);
+
+  let nodes = [];
+
+  data.forEach(d => {
+    for (let i = 0; i <= d.value; i+=30) {
+      nodes.push({
+        ring: d.dose,
+        cluster: d.age,
+        age: d.age,
+        category: d.fornitore
+      })
+    }
+  });
+
+  console.log(nodes);
 
   var colour = d3.scaleOrdinal()
-  	.domain(d3.map(data, d => d.category))
-    .range(["#B2AC2E", "#A49BD8", "#73BABA"]);
+  	.domain(d3.map(nodes, d => d.category))
+    .range(["#7cb6f3", "#c17333", "#93A64E"]);
 
-    // "#A49BD8", "#70B1A0", "#7FAEAE", "#FFF", "#000"]);
+  vaccineBrands = colour.domain();
 
-  var ringColor = d3.scaleOrdinal(d3.schemeSet3)
-  	.domain(d3.map(data, d => d.ring));
+  console.log(vaccineBrands.length);
 
-  let stroke = d3.scaleOrdinal()
-  .domain(d3.map(data, d => d.ring))
-  .domain(["#000", "#FFF"]);
+  var ringColor = d3.scaleOrdinal()
+  	.domain(d3.map(data, d => d.ring))
+    .range(["#000", "#FFF"]);
 
   var svg = d3.select('#graph')
     .html('')
@@ -26,22 +39,35 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   	.attr("height", h);
 
   let dayScale = d3.scaleOrdinal()
-  .domain(d3.map(data, d => d.data))
+  .domain(d3.map(data, d => d.data));
 
   let total = d3.rollup(data, v => d3.sum(v, d => d.value));
-  let days = dayScale.domain().length;
-  let target = 500000 * days;
+  let target = 500000;
 
-  let background = d3.scaleSqrt()
+  let background = d3.scaleQuantile()
     .domain([0, target])
-    .range(["#394F49", "#EAECD5"]);
+    .range(["#736F72", "#908C8C", "#ACA9A6", "#C9C5BF", "#E5E2D9"]);
 
   console.log(total, target);
 
-  svg.style("background", () => background(0));
+  svg.style("background", () => background(total));
 
-  //square path starts at mid point on the left side
-  // var square = 'M 50,400 L50,50 L750,50 L750,750 50,750 z'
+  let colorKey = svg.append("g");
+
+  colorKey.selectAll("circle")
+  .data(colour.domain())
+  .join("circle")
+  .attr("cx", 20)
+  .attr("cy", (d, i) => { return 30 + i*40})
+  .attr("r", 10)
+  .attr("fill", d => colour(d));
+
+  colorKey.selectAll("text")
+  .data(colour.domain())
+  .join("text")
+  .attr("x", 40)
+  .attr("y", (d, i) => { return 35 + i*40})
+  .text(d => d);
 
   let innerSvg = "M540,329.15c116.45,0,210.85,94.4,210.85,210.85S656.45,750.85,540,750.85S329.15,656.45,329.15,540S423.55,329.15,540,329.15z";
 
@@ -59,12 +85,12 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   var innerLength = d3.scalePoint()
   	.domain(d3.map(data, d => d.age))
     .range([0, innerRing.getTotalLength()])
-    .padding(0.5)
+    .padding(0.5);
 
   var outerLength = d3.scalePoint()
   	.domain(d3.map(data, d => d.age))
     .range([0, outerRing.getTotalLength()])
-    .padding(0.5)
+    .padding(0.5);
 
   var scaleX = function(d){
     if(d.ring == "SUM of prima_dose") {
@@ -82,21 +108,6 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
     }
   }
 
-  let nodes = [];
-
-  data.forEach(d => {
-    for (let i = 0; i <= d.value; i+=30) {
-      nodes.push({
-        ring: d.dose,
-        cluster: d.age,
-        age: d.age,
-        category: d.fornitore
-      })
-    }
-  });
-
-  console.log(nodes);
-
   var groups = _(nodes)
     .map('cluster')
     .uniq()
@@ -107,6 +118,8 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   _.each(nodes, (n, i) => {
     n.group = nodes[i].cluster;
   });
+
+
 
   // now group by group
   const nodeGroups = _.groupBy(nodes, 'group');
@@ -119,10 +132,10 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
       .append('circle')
   		.attr("class", "bee")
       .attr("r", r)
+      // .attr("stroke", d => ringColor(d.ring))
+      // .attr("stroke-width", 0.5)
   		.style("fill", d => colour(d.category))
-      .style("stroke", d => stroke(d.ring))
-      .attr("id", d => d.age)
-      .on("mouseover", (event, d) => console.log(d));
+      .attr("id", d => d.age);
 
   const hulls = svg
     .append("g")
@@ -131,9 +144,16 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
     .enter()
     .append('path')
     .style('stroke', "OrangeRed")
-    .style('stroke-width', 5)
+    .style('stroke-width', 4)
     .attr('stroke-linejoin', 'round')
     .attr("id", d => d);
+
+    svg.append("g")
+    .append("text")
+    .attr("x", w / 2)
+    .attr("y", h / 2)
+    .attr("text-anchor", "middle")
+    .text(`${d3.format(",")(total)} vaccini effettuati`);
 
   updateSwarm(650);
 
@@ -191,8 +211,6 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 
         return d3.line()(hullData);
       });
-
-        // = pythag(r, d.y, d.x)
 
   }
 
