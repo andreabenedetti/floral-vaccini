@@ -1,4 +1,4 @@
-d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mlaesn5tgSW6Sczw4KSUNg3MOMELBBXnQDn2J1QB12d0btw5NYMl7iMErh/pub?gid=942563243&single=true&output=csv").then(data => {
+d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mlaesn5tgSW6Sczw4KSUNg3MOMELBBXnQDn2J1QB12d0btw5NYMl7iMErh/pub?gid=811486179&single=true&output=csv").then(data => {
 
   var r = 2.5
   var w = 1080, h = 1080
@@ -21,7 +21,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   console.log(nodes);
 
   var colour = d3.scaleOrdinal()
-  	.domain(d3.map(nodes, d => d.category))
+  	.domain(d3.map(nodes, d => d.category).sort(d3.ascending))
     // .range(["#7cb6f3", "#c17333", "#93A64E"]);
     .range(["#8886FF", "#FF3864", "#57A48D"]);
 
