@@ -22,8 +22,16 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 
   var colour = d3.scaleOrdinal()
   	.domain(d3.map(nodes, d => d.category).sort(d3.ascending))
+    // Astrazeneca, Moderna, Pfizer
     // .range(["#7cb6f3", "#c17333", "#93A64E"]);
-    .range(["#8886FF", "#FF3864", "#57A48D"]);
+    // .range(["#7797A6", "#E28865", "#D0A9C0"]);
+    //.range(["#E28865", "#488F8F", "#9CB16B"]);
+    //.range(["#A16890", "#64C3C3", "#DC9174"]);
+    // .range(["#9AAA6D", "#724C44", "#848DCE"]);
+    //.range(["#9AAA6D", "#845149", "#848DCE"]);
+    .range(["#7A875C", "#344534", "#D48086"]);
+
+ 
 
   vaccineBrands = colour.domain();
 
@@ -48,7 +56,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   let background = d3.scaleLinear()
     .domain([100000, target])
     // .range(["#736F72", "#908C8C", "#ACA9A6", "#C9C5BF", "#E5E2D9"]);
-    .range(["#FFCEA1", "#EAECD5"]);
+    .range(["#E5DEB5", "#FFF7F0"]);
 
   console.log(total, target);
 
@@ -156,6 +164,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
     .attr("y", h / 2)
     .attr("text-anchor", "middle")
     .text(`${d3.format(",")(total)} vaccini effettuati`);
+    
 
   updateSwarm(650);
 
