@@ -20,6 +20,10 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 
   console.log(nodes);
 
+  let date = d3.max(data, d => d.day);
+
+  console.log(date);
+
   var colour = d3.scaleOrdinal()
   	.domain(["Vaxzevria (AstraZeneca)", "Moderna", "Pfizer/BioNTech"])
     // Astrazeneca, Moderna, Pfizer
@@ -40,14 +44,14 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
     .attr("width", w)
   	.attr("height", h);
 
-    const frame = svg.append("rect")
-    .attr("width", 1025)
-    .attr("height", 1025)
-    .attr("x", w / 2 - 1025 / 2)
-    .attr("y", h / 2 - 1025 / 2)
-    .attr("stroke", "#333")
-    .attr("stroke-width", 4)
-    .attr("fill", "none");
+    // const frame = svg.append("rect")
+    // .attr("width", 1025)
+    // .attr("height", 1025)
+    // .attr("x", w / 2 - 1025 / 2)
+    // .attr("y", h / 2 - 1025 / 2)
+    // .attr("stroke", "#333")
+    // .attr("stroke-width", 4)
+    // .attr("fill", "none");
 
   let dayScale = d3.scaleOrdinal()
   .domain(d3.map(data, d => d.data));
@@ -216,7 +220,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 	svgString2Image( svgString, 2*w, 2*h, 'png', save ); // passes Blob and filesize String to the callback
 
 	function save( dataBlob, filesize ){
-		saveAs( dataBlob, 'erbario-1.png' ); // FileSaver.js function
+		saveAs( dataBlob, `${date}-erbario-1.png` ); // FileSaver.js function
 	}
 });
 
