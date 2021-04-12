@@ -8,7 +8,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   let nodes = [];
 
   data.forEach(d => {
-    for (let i = 0; i <= d.value; i+=30) {
+    for (let i = 1; i <= d.value; i+=30) {
       nodes.push({
         ring: d.dose,
         cluster: d.age,
@@ -147,17 +147,17 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 
   console.log(nodeGroups);
 
-  // const hulls = svg
-  //   .append("g")
-  //   .selectAll('path')
-  //   .data(groups)
-  //   .enter()
-  //   .append('path')
-  //   .style("fill", () => background(total))
-  //   .style('stroke', "#333")
-  //   .style('stroke-width', 1)
-  //   .attr('stroke-linejoin', 'round')
-  //   .attr("id", d => d);
+  const hulls = svg
+    .append("g")
+    .selectAll('path')
+    .data(groups)
+    .enter()
+    .append('path')
+    .style("fill", () => background(total))
+    .style('stroke', "#333")
+    .style('stroke-width', 1)
+    .attr('stroke-linejoin', 'round')
+    .attr("id", d => d);
 
   var bees = svg.append("g").selectAll('.bee')
       .data(nodes)
@@ -218,21 +218,21 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
         .attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
 
-      // hulls.attr('d', g => {
-      //   let hullPoints = nodeGroups[g].map(n => {
-      //     return [n.x, n.y];
-      //   });
-      //
-      //   const hullData = d3.polygonHull(hullPoints);
-      //
-      //   if (hullData === null) {
-      //     return;
-      //   }
-      //
-      //   hullData.push(hullData[0]);
-      //
-      //   return d3.line()(hullData);
-      // });
+      hulls.attr('d', g => {
+        let hullPoints = nodeGroups[g].map(n => {
+          return [n.x, n.y];
+        });
+
+        const hullData = d3.polygonHull(hullPoints);
+
+        if (hullData === null) {
+          return;
+        }
+
+        hullData.push(hullData[0]);
+
+        return d3.line()(hullData);
+      });
 
   }
 

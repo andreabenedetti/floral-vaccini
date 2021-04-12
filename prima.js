@@ -8,7 +8,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   let nodes = [];
 
   data.forEach(d => {
-    for (let i = 0; i <= d.value; i+=30) {
+    for (let i = 1; i <= d.value; i+=30) {
       nodes.push({
         ring: d.dose,
         cluster: d.age,
