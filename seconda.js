@@ -44,6 +44,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   .attr("height", 1025)
   .attr("x", w / 2 - 1025 / 2)
   .attr("y", h / 2 - 1025 / 2)
+  .attr("fill", "none")
   .attr("stroke", "#333")
   .attr("stroke-width", 4);
 
