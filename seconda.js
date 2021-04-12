@@ -241,7 +241,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 	svgString2Image( svgString, 2*w, 2*h, 'png', save ); // passes Blob and filesize String to the callback
 
 	function save( dataBlob, filesize ){
-		saveAs( dataBlob, `${date}-erbario-1.png` ); // FileSaver.js function
+		saveAs( dataBlob, `${date}-erbario-2.png` ); // FileSaver.js function
 	}
 });
 
