@@ -21,14 +21,8 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   console.log(nodes);
 
   var colour = d3.scaleOrdinal()
-  	.domain(d3.map(nodes, d => d.category).sort(d3.ascending))
+  	.domain(["Vaxzevria (AstraZeneca)", "Moderna", "Pfizer/BioNTech"])
     // Astrazeneca, Moderna, Pfizer
-    // .range(["#7cb6f3", "#c17333", "#93A64E"]);
-    // .range(["#7797A6", "#E28865", "#D0A9C0"]);
-    //.range(["#E28865", "#488F8F", "#9CB16B"]);
-    //.range(["#A16890", "#64C3C3", "#DC9174"]);
-    // .range(["#9AAA6D", "#724C44", "#848DCE"]);
-    //.range(["#9AAA6D", "#845149", "#848DCE"]);
     .range(["#7A875C", "#344534", "#D48086"]);
 
 
@@ -47,6 +41,15 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
     .attr("width", w)
   	.attr("height", h);
 
+  const cornice = svg.append("rect")
+  .attr("width", 1025)
+  .attr("height", 1025)
+  .attr("x", (w / 2) - (1025 / 2))
+  .attr("y", (w / 2) - (1025 / 2))
+  .attr("stroke", "#333")
+  .attr("stroke-width", 4)
+  .attr("fill", "none");
+
   let dayScale = d3.scaleOrdinal()
   .domain(d3.map(data, d => d.data));
 
@@ -63,20 +66,25 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 
   let colorKey = svg.append("g");
 
-  colorKey.selectAll("circle")
-  .data(colour.domain())
-  .join("circle")
-  .attr("cx", 20)
-  .attr("cy", (d, i) => { return 30 + i*40})
-  .attr("r", 10)
-  .attr("fill", d => colour(d));
+  d3.xml("erbario-layout.svg")
+  .then(data => {
+    svg.node().append(data.documentElement)
+  });
 
-  colorKey.selectAll("text")
-  .data(colour.domain())
-  .join("text")
-  .attr("x", 40)
-  .attr("y", (d, i) => { return 35 + i*40})
-  .text(d => d);
+  // colorKey.selectAll("circle")
+  // .data(colour.domain())
+  // .join("circle")
+  // .attr("cx", 20)
+  // .attr("cy", (d, i) => { return 30 + i*40})
+  // .attr("r", 10)
+  // .attr("fill", d => colour(d));
+  //
+  // colorKey.selectAll("text")
+  // .data(colour.domain())
+  // .join("text")
+  // .attr("x", 40)
+  // .attr("y", (d, i) => { return 35 + i*40})
+  // .text(d => d);
 
   let innerSvg = "M540,329.15c116.45,0,210.85,94.4,210.85,210.85S656.45,750.85,540,750.85S329.15,656.45,329.15,540S423.55,329.15,540,329.15z";
 
@@ -137,6 +145,17 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 
   console.log(nodeGroups);
 
+  const hulls = svg
+    .append("g")
+    .selectAll('path')
+    .data(groups)
+    .enter()
+    .append('path')
+    .style('stroke', "#333")
+    .style('stroke-width', 1)
+    .attr('stroke-linejoin', 'round')
+    .attr("id", d => d);
+
   var bees = svg.append("g").selectAll('.bee')
       .data(nodes)
       .enter()
@@ -148,23 +167,12 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   		.style("fill", d => colour(d.category))
       .attr("id", d => d.age);
 
-  // const hulls = svg
-  //   .append("g")
-  //   .selectAll('path')
-  //   .data(groups)
-  //   .enter()
-  //   .append('path')
-  //   .style('stroke', "#000")
-  //   .style('stroke-width', 2)
-  //   .attr('stroke-linejoin', 'round')
-  //   .attr("id", d => d);
-
-    svg.append("g")
-    .append("text")
-    .attr("x", w / 2)
-    .attr("y", h / 2)
-    .attr("text-anchor", "middle")
-    .text(`${d3.format(",")(total)} vaccini effettuati`);
+    // svg.append("g")
+    // .append("text")
+    // .attr("x", w / 2)
+    // .attr("y", h / 2)
+    // .attr("text-anchor", "middle")
+    // .text(`${d3.format(",")(total)} vaccini effettuati`);
 
 
   updateSwarm(650);
@@ -208,21 +216,21 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
         .attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
 
-      // hulls.attr('d', g => {
-      //   let hullPoints = nodeGroups[g].map(n => {
-      //     return [n.x, n.y];
-      //   });
-      //
-      //   const hullData = d3.polygonHull(hullPoints);
-      //
-      //   if (hullData === null) {
-      //     return;
-      //   }
-      //
-      //   hullData.push(hullData[0]);
-      //
-      //   return d3.line()(hullData);
-      // });
+      hulls.attr('d', g => {
+        let hullPoints = nodeGroups[g].map(n => {
+          return [n.x, n.y];
+        });
+
+        const hullData = d3.polygonHull(hullPoints);
+
+        if (hullData === null) {
+          return;
+        }
+
+        hullData.push(hullData[0]);
+
+        return d3.line()(hullData);
+      });
 
   }
 
