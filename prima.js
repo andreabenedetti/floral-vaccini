@@ -26,7 +26,6 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
     .range(["#7A875C", "#344534", "#D48086"]);
 
 
-
   vaccineBrands = colour.domain();
 
   console.log(vaccineBrands.length);
@@ -41,14 +40,14 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
     .attr("width", w)
   	.attr("height", h);
 
-  const cornice = svg.append("rect")
-  .attr("width", 1025)
-  .attr("height", 1025)
-  .attr("x", (w / 2) - (1025 / 2))
-  .attr("y", (w / 2) - (1025 / 2))
-  .attr("stroke", "#333")
-  .attr("stroke-width", 4)
-  .attr("fill", "none");
+    const frame = svg.append("rect")
+    .attr("width", 1025)
+    .attr("height", 1025)
+    .attr("x", w / 2 - 1025 / 2)
+    .attr("y", h / 2 - 1025 / 2)
+    .attr("stroke", "#333")
+    .attr("stroke-width", 4)
+    .attr("fill", "none");
 
   let dayScale = d3.scaleOrdinal()
   .domain(d3.map(data, d => d.data));
@@ -65,26 +64,6 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   svg.style("background", () => background(total));
 
   let colorKey = svg.append("g");
-
-  d3.xml("erbario-layout.svg")
-  .then(data => {
-    svg.node().append(data.documentElement)
-  });
-
-  // colorKey.selectAll("circle")
-  // .data(colour.domain())
-  // .join("circle")
-  // .attr("cx", 20)
-  // .attr("cy", (d, i) => { return 30 + i*40})
-  // .attr("r", 10)
-  // .attr("fill", d => colour(d));
-  //
-  // colorKey.selectAll("text")
-  // .data(colour.domain())
-  // .join("text")
-  // .attr("x", 40)
-  // .attr("y", (d, i) => { return 35 + i*40})
-  // .text(d => d);
 
   let innerSvg = "M540,329.15c116.45,0,210.85,94.4,210.85,210.85S656.45,750.85,540,750.85S329.15,656.45,329.15,540S423.55,329.15,540,329.15z";
 
@@ -145,16 +124,16 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 
   console.log(nodeGroups);
 
-  const hulls = svg
-    .append("g")
-    .selectAll('path')
-    .data(groups)
-    .enter()
-    .append('path')
-    .style('stroke', "#333")
-    .style('stroke-width', 1)
-    .attr('stroke-linejoin', 'round')
-    .attr("id", d => d);
+  // const hulls = svg
+  //   .append("g")
+  //   .selectAll('path')
+  //   .data(groups)
+  //   .enter()
+  //   .append('path')
+  //   .style('stroke', "#333")
+  //   .style('stroke-width', 1)
+  //   .attr('stroke-linejoin', 'round')
+  //   .attr("id", d => d);
 
   var bees = svg.append("g").selectAll('.bee')
       .data(nodes)
@@ -162,8 +141,6 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
       .append('circle')
   		.attr("class", "bee")
       .attr("r", r)
-      // .attr("stroke", d => ringColor(d.ring))
-      // .attr("stroke-width", 0.5)
   		.style("fill", d => colour(d.category))
       .attr("id", d => d.age);
 
@@ -216,21 +193,21 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
         .attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
 
-      hulls.attr('d', g => {
-        let hullPoints = nodeGroups[g].map(n => {
-          return [n.x, n.y];
-        });
-
-        const hullData = d3.polygonHull(hullPoints);
-
-        if (hullData === null) {
-          return;
-        }
-
-        hullData.push(hullData[0]);
-
-        return d3.line()(hullData);
-      });
+      // hulls.attr('d', g => {
+      //   let hullPoints = nodeGroups[g].map(n => {
+      //     return [n.x, n.y];
+      //   });
+      //
+      //   const hullData = d3.polygonHull(hullPoints);
+      //
+      //   if (hullData === null) {
+      //     return;
+      //   }
+      //
+      //   hullData.push(hullData[0]);
+      //
+      //   return d3.line()(hullData);
+      // });
 
   }
 
@@ -239,7 +216,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 	svgString2Image( svgString, 2*w, 2*h, 'png', save ); // passes Blob and filesize String to the callback
 
 	function save( dataBlob, filesize ){
-		saveAs( dataBlob, 'D3 vis exported to PNG.png' ); // FileSaver.js function
+		saveAs( dataBlob, 'erbario-1.png' ); // FileSaver.js function
 	}
 });
 
