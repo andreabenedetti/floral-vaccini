@@ -128,16 +128,15 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
 
   console.log(nodeGroups);
 
-  // const hulls = svg
-  //   .append("g")
-  //   .selectAll('path')
-  //   .data(groups)
-  //   .enter()
-  //   .append('path')
-  //   .style('stroke', "#333")
-  //   .style('stroke-width', 1)
-  //   .attr('stroke-linejoin', 'round')
-  //   .attr("id", d => d);
+  const hulls = svg
+    .append("g")
+    .selectAll('path')
+    .data(groups)
+    .enter()
+    .append('path')
+    .style('stroke', "none")
+    .style('fill', "none")
+    .attr("id", d => d);
 
   var bees = svg.append("g").selectAll('.bee')
       .data(nodes)
@@ -148,15 +147,21 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   		.style("fill", d => colour(d.category))
       .attr("id", d => d.age);
 
-    // svg.append("g")
-    // .append("text")
-    // .attr("x", w / 2)
-    // .attr("y", h / 2)
-    // .attr("text-anchor", "middle")
-    // .text(`${d3.format(",")(total)} vaccini effettuati`);
-
 
   updateSwarm(650);
+
+  function secondSlide() {
+    hulls.style('stroke', "#333")
+    .style('stroke-width', 1)
+    .attr('stroke-linejoin', 'round');
+
+    bees.style("opacity", 0.5);
+
+    d3.xml("erbario-layout.svg")
+    .then(data => {
+      svg.node().append(data.documentElement)
+    });
+  }
 
   function changeShape() {
 
@@ -197,23 +202,25 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
         .attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
 
-      // hulls.attr('d', g => {
-      //   let hullPoints = nodeGroups[g].map(n => {
-      //     return [n.x, n.y];
-      //   });
-      //
-      //   const hullData = d3.polygonHull(hullPoints);
-      //
-      //   if (hullData === null) {
-      //     return;
-      //   }
-      //
-      //   hullData.push(hullData[0]);
-      //
-      //   return d3.line()(hullData);
-      // });
+      hulls.attr('d', g => {
+        let hullPoints = nodeGroups[g].map(n => {
+          return [n.x, n.y];
+        });
+
+        const hullData = d3.polygonHull(hullPoints);
+
+        if (hullData === null) {
+          return;
+        }
+
+        hullData.push(hullData[0]);
+
+        return d3.line()(hullData);
+      });
 
   }
+
+  d3.select("#secondSlide").on("click", secondSlide);
 
   d3.select('#saveButton').on('click', function(){
 	var svgString = getSVGString(svg.node());
