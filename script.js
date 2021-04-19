@@ -148,7 +148,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
       .attr("id", d => d.age);
 
 
-  updateSwarm(650);
+  updateSwarm(700);
 
   function secondSlide() {
     hulls.style('stroke', "#333")
