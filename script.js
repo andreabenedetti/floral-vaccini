@@ -25,9 +25,9 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
   console.log(date);
 
   var colour = d3.scaleOrdinal()
-  	.domain(["Vaxzevria (AstraZeneca)", "Moderna", "Pfizer/BioNTech"])
+  	.domain(["Vaxzevria (AstraZeneca)", "Moderna", "Pfizer/BioNTech", "Janssen"])
     // Astrazeneca, Moderna, Pfizer
-    .range(["#7A875C", "#344534", "#D48086"]);
+    .range(["#7A875C", "#344534", "#D48086", "#6E92B2"]);
 
 
   vaccineBrands = colour.domain();
