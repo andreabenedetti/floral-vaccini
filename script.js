@@ -1,6 +1,6 @@
 d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mlaesn5tgSW6Sczw4KSUNg3MOMELBBXnQDn2J1QB12d0btw5NYMl7iMErh/pub?gid=811486179&single=true&output=csv").then(data => {
 
-  var r = 2.5
+  var r = 2
   var w = 1080, h = 1080
   const radius = w/2;
   const hyp2 = Math.pow(radius, 2);
@@ -148,7 +148,7 @@ d3.csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vRRNsZ-AEwxUVzupayOR0mla
       .attr("id", d => d.age);
 
 
-  updateSwarm(900);
+  updateSwarm(1000);
 
   function secondSlide() {
     hulls.style('stroke', "#333")
